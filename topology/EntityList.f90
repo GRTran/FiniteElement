@@ -87,4 +87,24 @@ contains
 
   end subroutine
 
+  subroutine read_lines( entity_list, file_ref )
+    type(entityListC), intent(inout) :: entity_list
+    integer          , intent(in)    :: file_ref
+
+    real(wp) :: coords(3)
+
+    do i = 1, size(entity_list%points)
+      int_ents = 0
+      read(file_ref,*) coords, num_physical_links
+      allocate( property_ids(num_physical_links), stat=status )
+      if ( status /= 0 ) stop 'Error allocating entity list, go buy more RAM!'
+      backspace(file_ref)
+      read(file_ref,*) coords, num_physical_links, property_ids
+      call entity_list%points(i)%initialise(coords, num_physical_links, property_ids)
+      deallocate( property_ids, stat=status )
+      if ( status /= 0 ) stop 'Error allocating entity list, go buy more RAM!'
+    enddo
+
+  end subroutine
+
 end module
