@@ -10,6 +10,8 @@ OBJS=			    ../VarPrecision.o																								\
 							../topology/EntityPoint.o																				\
 							../topology/EntityLine.o																				\
 							../topology/EntityList.o																				\
+							../mesh/ControlPointsModule.o																		\
+							../mesh/ControlPointListModule.o																\
 							../FEM.o																												\
 #Set up the MODS so it contains the same as OBJS but with the .o replaced by .mod
 MODS= $(OBJS:.o=.mod)

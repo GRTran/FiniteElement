@@ -107,7 +107,7 @@ contains
       write(*,*)
     enddo
 
-    ! point data to write
+    ! line data to write
     write(*,*) '- - - - - - - - - - - - - - - - - - - -'
     write(*,'(a,i0)') 'LINES: ', size(this%lines)
     write(*,*) '- - - - - - - - - - - - - - - - - - - -'

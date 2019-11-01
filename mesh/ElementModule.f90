@@ -1,6 +1,6 @@
 module ElementModule
-  use VariablePrecision
-  use VertexModule
+  use VarPrecision
+  use ControlPointsModule
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   !! Author: Greg Jones
   !! Date: 17-10-19
@@ -11,21 +11,18 @@ module ElementModule
   ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   type, abstract :: elementC
-    type(vertexC), allocatable :: vertex(:)
+    type(controlPointC), allocatable :: control_points(:)
     !! the vertices that are contained within the element
     type(topologicalC), allocatable :: solution_vector(:)
-    !! the topological region that the element is contained within
-    logical :: on_boundary
-    integer :: dof
     !! the number of degrees of freedom within the system
-    real(wp), allocatable :: element_id(:)
+    integer :: element_id
     !! the element IDs that this vertex is associated with
   contains
-    procedure(initialise_element), deferred, public, pass :: abstract_initialise_element
+    procedure(initialise), deferred, public, pass :: abstract_initialise_element
   end type
 
   abstract interface
-    subroutine initialise_element( this, ...)
+    subroutine abstract_initialise_element( this, ...)
       import elementC
       type(elementC), intent(out) :: this
 
