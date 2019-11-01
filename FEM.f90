@@ -12,7 +12,5 @@ call entities%associate(properties)
 
 call entities%print_all()
 
-call entities%point_info(4)
-
 
 end program

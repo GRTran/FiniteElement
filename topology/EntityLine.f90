@@ -19,6 +19,10 @@ module EntityLine
   contains
     procedure, public, pass :: initialise => initialise_line_entity
     procedure, public, pass :: associate_points
+    procedure, public, pass :: get_coordinates_all
+    procedure, public, pass :: get_coordinate => line_get_coordinate
+    procedure, public, pass :: get_number_associated_points
+    procedure, public, pass :: get_associated_point_id
   end type
 
 contains
@@ -87,5 +91,48 @@ contains
     if ( status /= 0 ) write(*,*) 'Warning: Error in deallocating logical found array'
   end subroutine
 
+  function get_coordinates_all( this, start_end ) result( coords )
+    !! return the x,y,z of either the start or the end coordinates based on whether integer is 0 or 1
+    class(entityLineC), intent(in) :: this
+    integer           , intent(in) :: start_end
+    real(wp)                       :: coords(3)
+
+    if (start_end == 0) then
+      coords = this%coordinate_start
+    elseif (start_end == 1) then
+      coords = this%coordinate_end
+    else
+      stop 'Error incorrect start end specification in line get_coordinates, expect 0/1'
+    endif
+  end function
+
+  real(wp) function line_get_coordinate( this, start_end, dim )
+    !! returns a single coordinate for either the start or the end of the line
+    class(entityLineC), intent(in) :: this
+    integer           , intent(in) :: start_end
+    integer           , intent(in) :: dim
+
+    if ( dim > 3 .or. dim < 1 ) stop 'Error incorrect dimenson specification in line get_coordinates, expect 1/2/3'
+
+    if (start_end == 0) then
+      line_get_coordinate = this%coordinate_start(dim)
+    elseif (start_end == 1) then
+      line_get_coordinate = this%coordinate_end(dim)
+    else
+      stop 'Error incorrect start end specification in line get_coordinates, expect 0/1'
+    endif
+  end function
+
+  integer function get_number_associated_points( this )
+    class(entityLineC), intent(in) :: this
+    get_number_associated_points = this%number_points
+  end function
+
+  integer function get_associated_point_id( this, index )
+    !! returns the associated point id
+    class(entityLineC), intent(in) :: this
+    integer           , intent(in) :: index
+    get_associated_point_id = this%points(index)%get_id()
+  end function
 
 end module

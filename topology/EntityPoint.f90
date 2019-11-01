@@ -14,6 +14,7 @@ module EntityPoint
   contains
     procedure, public, pass :: initialise => initialise_point_entity
     procedure, public, pass :: get_coordinates
+    procedure, public, pass :: get_coordinate => point_get_coordinate
   end type
 
 contains
@@ -41,6 +42,15 @@ contains
     class(entityPointC), intent(in) :: this
     real(wp)                        :: coords(3)
     coords = this%coordinates
+  end function
+
+  real(wp) function point_get_coordinate( this, dim )
+    !! returns a single coordinate in the dimension that is specified
+    class(entityPointC), intent(in) :: this
+    integer           , intent(in) :: dim
+
+    if ( dim > 3 .or. dim < 1 ) stop 'Error incorrect dimenson specification in line get_coordinates, expect 1/2/3'
+    point_get_coordinate = this%coordinates(dim)
   end function
 
 

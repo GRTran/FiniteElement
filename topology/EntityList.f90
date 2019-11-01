@@ -21,6 +21,9 @@ module EntityList
     generic  , public       :: point_info => single_point_info, array_point_info
     procedure, public, pass :: single_point_info
     procedure, public, pass :: array_point_info
+    generic  , public       :: line_info => single_line_info, array_line_info
+    procedure, public, pass :: single_line_info
+    procedure, public, pass :: array_line_info
   end type
 
 contains
@@ -91,7 +94,7 @@ contains
 
     ! point data to write
     write(*,*) '- - - - - - - - - - - - - - - - - - - -'
-    write(*,*) 'POINTS'
+    write(*,'(a,i0)') 'POINTS: ', size(this%points)
     write(*,*) '- - - - - - - - - - - - - - - - - - - -'
 
     do i = 1, size(this%points)
@@ -103,9 +106,31 @@ contains
       enddo
       write(*,*)
     enddo
+
+    ! point data to write
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    write(*,'(a,i0)') 'LINES: ', size(this%lines)
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+
+    do i = 1, size(this%lines)
+      write(*,'(a,i0)') 'Line number: ', i
+      write(*,'(a,3f8.2)') 'Coordinate start: ', this%lines(i)%get_coordinates_all(0)
+      write(*,'(a,3f8.2)') 'Coordinate end: ', this%lines(i)%get_coordinates_all(1)
+      write(*,'(a,i0)') 'Number of associated points: ', this%lines(i)%get_number_associated_points()
+      write(*,'(a)') 'Associated points in order:'
+      do j = 1, this%lines(i)%get_number_associated_points()
+        write(*,'(i0)') this%lines(i)%get_associated_point_id(j)
+      enddo
+      write(*,'(a,i0)') 'Number of associated properties: ', this%lines(i)%get_number_associated_properties()
+      do j = 1, this%lines(i)%get_number_associated_properties()
+        write(*,'(a,i0,a,a,al1)') 'Associated Property ', j, ' name: ', trim(this%lines(i)%get_property_name_id(j)), ' is boundary: ', this%lines(i)%is_boundary(j)
+      enddo
+      write(*,*)
+    enddo
   end subroutine
 
   subroutine single_point_info( this, index )
+    !! prints out the information for a single point
     class(entityListC), intent(in) :: this
     integer           , intent(in) :: index
 
@@ -126,11 +151,15 @@ contains
   end subroutine
 
   subroutine array_point_info( this, indices )
+    !! prints out the information for an array of points
     class(entityListC), intent(in) :: this
     integer           , intent(in) :: indices(:)
 
     integer :: i, j
 
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    write(*,*) 'POINT INFO'
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
     do i = 1, size(indices)
       if ( indices(i) > size(this%points) .or. indices(i) < 0 ) stop 'Error incorrect specified index when getting point info'
       write(*,'(a,i0)') 'Point number: ', indices(i)
@@ -138,6 +167,61 @@ contains
       write(*,'(a,i0)') 'Number of associated properties: ', this%points(indices(i))%get_number_associated_properties()
       do j = 1, this%points(indices(i))%get_number_associated_properties()
         write(*,'(a,i0,a,a,al1)') 'Associated Property ', j, ' name: ', trim(this%points(indices(i))%get_property_name_id(j)), ' is boundary: ', this%points(indices(i))%is_boundary(j)
+      enddo
+      write(*,*)
+    enddo
+  end subroutine
+
+  subroutine single_line_info( this, index )
+    !! prints out the information for a single line
+    class(entityListC), intent(in) :: this
+    integer           , intent(in) :: index
+
+    integer :: j
+
+    if ( index > size(this%lines) .or. index < 0 ) stop 'Error incorrect specified index when getting point info'
+
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    write(*,*) 'LINE INFO'
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    write(*,'(a,i0)') 'Line number: ', index
+    write(*,'(a,3f8.2)') 'Coordinate start: ', this%lines(index)%get_coordinates_all(0)
+    write(*,'(a,3f8.2)') 'Coordinate end: ', this%lines(index)%get_coordinates_all(1)
+    write(*,'(a,i0)') 'Number of associated points: ', this%lines(index)%get_number_associated_points()
+    write(*,'(a)') 'Associated points in order:'
+    do j = 1, this%lines(index)%get_number_associated_points()
+      write(*,'(i0)') this%lines(index)%get_associated_point_id(j)
+    enddo
+    write(*,'(a,i0)') 'Number of associated properties: ', this%lines(index)%get_number_associated_properties()
+    do j = 1, this%lines(index)%get_number_associated_properties()
+      write(*,'(a,i0,a,a,al1)') 'Associated Property ', j, ' name: ', trim(this%lines(index)%get_property_name_id(j)), ' is boundary: ', this%lines(index)%is_boundary(j)
+    enddo
+    write(*,*)
+  end subroutine
+
+  subroutine array_line_info( this, indices )
+    !! prints out the information for an array of lines
+    class(entityListC), intent(in) :: this
+    integer           , intent(in) :: indices(:)
+
+    integer :: i, j
+
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    write(*,*) 'LINE INFO'
+    write(*,*) '- - - - - - - - - - - - - - - - - - - -'
+    do i = 1, size(indices)
+      if ( indices(i) > size(this%lines) .or. indices(i) < 0 ) stop 'Error incorrect specified index when getting line info'
+      write(*,'(a,i0)') 'Line number: ', i
+      write(*,'(a,3f8.2)') 'Coordinate start: ', this%lines(indices(i))%get_coordinates_all(0)
+      write(*,'(a,3f8.2)') 'Coordinate end: ', this%lines(indices(i))%get_coordinates_all(1)
+      write(*,'(a,i0)') 'Number of associated points: ', this%lines(indices(i))%get_number_associated_points()
+      write(*,'(a)') 'Associated points in order:'
+      do j = 1, this%lines(indices(i))%get_number_associated_points()
+        write(*,'(i0)') this%lines(indices(i))%get_associated_point_id(j)
+      enddo
+      write(*,'(a,i0)') 'Number of associated properties: ', this%lines(indices(i))%get_number_associated_properties()
+      do j = 1, this%lines(indices(i))%get_number_associated_properties()
+        write(*,'(a,i0,a,a,al1)') 'Associated Property ', j, ' name: ', trim(this%lines(indices(i))%get_property_name_id(j)), ' is boundary: ', this%lines(indices(i))%is_boundary(j)
       enddo
       write(*,*)
     enddo
